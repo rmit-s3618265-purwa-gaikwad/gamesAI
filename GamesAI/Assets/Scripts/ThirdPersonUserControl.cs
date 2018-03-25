@@ -32,7 +32,7 @@ namespace GamesAI
             {
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
-                if (groundCollider.Raycast(ray, out hit, float.PositiveInfinity))
+                if (groundCollider.Raycast(ray, out hit, 1000))
                 {
                     Vector3 target = hit.point;
                     if (!lastTarget.HasValue || ((target - lastTarget.Value).magnitude > 1))
