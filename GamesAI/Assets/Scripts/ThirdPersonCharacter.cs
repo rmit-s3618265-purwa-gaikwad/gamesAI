@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace GamesAI
 {
@@ -14,6 +15,21 @@ namespace GamesAI
 
         void Start()
         {
+			Debug.Log ("Starting the game");
+			/*List<NavMeshSurface> listSurfaces = NavMeshSurface.activeSurfaces;*/
+			NavMeshTriangulation navMeshTriangulation = NavMesh.CalculateTriangulation ();
+
+			int[] nodeAreaIndices = navMeshTriangulation.indices;
+			Vector3[] nodeVectors = navMeshTriangulation.vertices;
+			int[] nodeAreas = navMeshTriangulation.areas;
+
+			Debug.Log (string.Format("vertices size = {0}", nodeVectors.Length));
+			Debug.Log (string.Format("indices size = {0}", nodeAreaIndices.Length));
+			Debug.Log (string.Format("areas size = {0}", navMeshTriangulation.areas.Length));
+
+			foreach(Vector3 v in nodeVectors) {
+				Debug.Log (string.Format("Vertices in triangulation is {0}, {1}, {2}", v.x, v.y, v.z));
+			}
             m_Rigidbody = GetComponent<Rigidbody>();
             m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         }
