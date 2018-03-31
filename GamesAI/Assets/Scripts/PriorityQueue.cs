@@ -12,6 +12,11 @@ namespace GamesAI
             this.data = new List<Node>();
         }
 
+		public int getSize()
+		{
+			return this.data.Count;
+		}
+
         public void enqueue(Node newNode)
         {
             int index = 0;
@@ -45,7 +50,8 @@ namespace GamesAI
 
         public void removeNode(Node node)
         {
-            data.Remove(node);
+			data.Remove(node);
+
         }
         public void addNode(Node node)
         {

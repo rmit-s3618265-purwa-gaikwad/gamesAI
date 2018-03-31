@@ -5,140 +5,105 @@ using System.Collections.Generic;
 
 namespace GamesAI
 {
-    public class PathFinding
+	public class PathFinding: MonoBehaviour
     {
-        Node startNode;
-        Node targetNode;
-        Node node2, node3, node4;
-        PriorityQueue openlist;
-        PriorityQueue closedlist;
-        public void init()
+		GridPlane grid;
+		public Transform start;
+		public Transform target;
+		public List<Node> path;
+		int val = 1;
+		void Awake() {
+			grid = GetComponent<GridPlane> ();
+		}
+
+		void Update() {
+			if (val == 1) {
+				process (start.position, target.position);
+				val = 2;
+			}
+		}
+
+		public List<Node> process(Vector3 startVector, Vector3 targetVector)
         {
-            startNode = new Node(1, 0, 5);
-            targetNode = new Node(5, 0, 0);
-            node2 = new Node(2, 0, 0);
-            node3 = new Node(3, 0, 0);
-            node4 = new Node(4, 0, 0);
+			Node startNode = grid.NodeFromWorldPoint(startVector);
+			Node targetNode = grid.NodeFromWorldPoint(targetVector);
 
-            // startNode "1" with connections (cost 1 to Node 2), (cost 3 to Node 3)
-            startNode.setConnection(1, node2);
-            startNode.setConnection(3, node3);
-
-            // targetNode "5" with connections (cost 2 to Node 4)
-            targetNode.setConnection(2, node4);
-
-            // node2
-            node2.setConnection(1, startNode);
-            node2.setConnection(2, node4);
-
-            //node3
-            node3.setConnection(3, startNode);
-            node3.setConnection(1, node4);
-
-            //node4
-            node4.setConnection(2, node2);
-            node4.setConnection(1, node3);
-            node4.setConnection(2, targetNode);
-
-            // openlist
-            openlist = new PriorityQueue();
-            openlist.enqueue(startNode);
-
-            //closedlist
-            closedlist = new PriorityQueue();
-        }
-        public List<Node> process()
-        {
-            List<Node> path;
+			if (startNode == null)
+				Debug.Log ("startNode is null");
+			if (targetNode == null)
+				Debug.Log ("targetNode is null");
+			
+			PriorityQueue openlist = new PriorityQueue();
+			PriorityQueue closedlist = new PriorityQueue();          
             Node currentNode = null;
-            List<connection> currentNodeconnections;
+			openlist.addNode (startNode);
             while (!openlist.isEmpty())
             {
                 currentNode = openlist.dequeue();
-                Console.WriteLine("Current Node = {0}", currentNode.getNodeId());
+				//Debug.Log ("openlist size = " +  openlist.getSize());
+				//Debug.Log (string.Format("Current node is {0}, {1}", currentNode.getIndexX(), currentNode.getIndexY()));
                 if (currentNode.Equals(targetNode))
                 {
                     break;
                 }
-                currentNodeconnections = currentNode.getConnection();
-                foreach (connection currentNodeconnection in currentNodeconnections)
+				List<Node> neighbors = grid.GetNeighbours(currentNode);
+                foreach (Node neighbor in neighbors)
                 {
-                    Node endNode = currentNodeconnection.toNode;
-                    Console.WriteLine("-- Processing connection to {0}", endNode.getNodeId());
-                    double endNodeCost = currentNodeconnection.cost + currentNode.getCostSoFar();
-                    double endNodeHeuristics = 0;
-                    if (closedlist.contains(endNode))
+                    double neighborCost = 1 + currentNode.getCostSoFar();
+                    double neighborHeuristics = 0;
+					if (closedlist.contains(neighbor))
                     {
-                        if (endNode.getCostSoFar() > endNodeCost)
+						if (neighbor.getCostSoFar() > neighborCost)
                         {
-                            closedlist.removeNode(endNode);
-                            endNodeHeuristics = endNode.getEstimatedTotalCost() - endNode.getCostSoFar(); // not sure
+							closedlist.removeNode(neighbor);
+							neighborHeuristics = neighbor.getEstimatedTotalCost() - neighbor.getCostSoFar();
                         }
                         else
                             continue;
                     }
-                    else if (openlist.contains(endNode))
+					else if (openlist.contains(neighbor))
                     {
-                        if (endNode.getCostSoFar() > endNodeCost)
+						if (neighbor.getCostSoFar() > neighborCost)
                         {
-                            endNodeHeuristics = endNode.getEstimatedTotalCost() - endNode.getCostSoFar(); //not sure
+							neighborHeuristics = neighbor.getEstimatedTotalCost() - neighbor.getCostSoFar();
                         }
                         else
                             continue;
                     }
                     else
                     {
-                        endNodeHeuristics = 0;
-                        if (endNode.getNodeId() == 1)
-                        {
-                            endNodeHeuristics = 5;
-                        }
-                        else if (endNode.getNodeId() == 2)
-                        {
-                            endNodeHeuristics = 4;
-                        }
-                        else if (endNode.getNodeId() == 3)
-                        {
-                            endNodeHeuristics = 3;
-                        }
-                        else if (endNode.getNodeId() == 4)
-                        {
-                            endNodeHeuristics = 2;
-                        }
-                        else if (endNode.getNodeId() == 5)
-                        {
-                            endNodeHeuristics = 0;
-                        }
+						neighborHeuristics = neighbor.getHeuristicValue(targetNode);
                     }
-                    endNode.setCostSoFar(endNodeCost);
-                    // update connections here
-                    //endNode.setConnection(currentNodeConnection);
-                    endNode.setEstimatedTotalCost(endNodeCost + endNodeHeuristics);
-                    endNode.setFromNode(currentNode);
-                    if (!openlist.contains(endNode))
+					neighbor.setCostSoFar(neighborCost);
+					neighbor.setEstimatedTotalCost(neighborCost + neighborHeuristics);
+					neighbor.setFromNode(currentNode);
+					if (!openlist.contains(neighbor))
                     {
-                        openlist.enqueue(endNode);
+						openlist.enqueue(neighbor);
                     }
                 }
                 openlist.removeNode(currentNode);
                 closedlist.addNode(currentNode);
             }
-            if (!currentNode.Equals(targetNode))
+           	if (!currentNode.Equals(targetNode))
             {
                 return null;
             }
             else
             {
                 path = new List<Node>();
+				grid.path = new List<Node>();
                 while (!currentNode.Equals(startNode))
                 {
+					Debug.Log (string.Format("Current node is {0}, {1}", currentNode.getIndexX(), currentNode.getIndexY()));
+					grid.path.Add (currentNode);
                     path.Add(currentNode);
                     currentNode = currentNode.getFromNode();
                 }
+				grid.path.Reverse ();
                 path.Reverse();
                 return path;
             }
         }
     }
 }
-

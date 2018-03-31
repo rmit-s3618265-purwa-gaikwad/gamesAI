@@ -3,41 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 namespace GamesAI
 {
-    public struct connection
-    {
-        public double cost;
-        public Node toNode;
-
-        public connection(double costValue, Node toNodeValue)
-        {
-            cost = costValue;
-            toNode = toNodeValue;
-        }
-    }
     public class Node
     {
-
-        public int nodeId;
-        public List<connection> connections;
+		bool walkable;
+		Vector3 gridWorldPosition;
+        public int indexX, indexY;
         public double costSoFar;
         public double estimatedTotalCost;
         public Node fromNode;
 
-        public Node(int nodeIdValue, double costSoFarValue, double estimatedTotalCosValue)
+		public Node(int iPosX, int iPosY, bool bWalkable, Vector3 vGridWorldPosition)
         {
-            nodeId = nodeIdValue;
-            connections = new List<connection>();
-            costSoFar = costSoFarValue;
-            estimatedTotalCost = estimatedTotalCosValue;
+            indexX = iPosX;
+			indexY = iPosY;
+			walkable = bWalkable;
+			gridWorldPosition = vGridWorldPosition;
         }
-        public void setNodeId(int nodeIdValue)
+        public void setIndexX(int iIndexX)
         {
-            nodeId = nodeIdValue;
+			indexX = iIndexX;
         }
-        public void setConnection(double costValue, Node toNodeValue)
-        {
-            connections.Add(new connection(costValue, toNodeValue));
-        }
+		public void setIndexY(int iIndexY)
+		{
+			indexY = iIndexY;
+		}
         public void setFromNode(Node fromNodeValue)
         {
             fromNode = fromNodeValue;
@@ -50,14 +39,22 @@ namespace GamesAI
         {
             estimatedTotalCost = estimatedTotalCosValue;
         }
-        public int getNodeId()
+        public int getIndexX()
         {
-            return nodeId;
+			return indexX;
         }
-        public List<connection> getConnection()
-        {
-            return connections;
-        }
+		public int getIndexY()
+		{
+			return indexY;
+		}
+		public bool getWalkable()
+		{
+			return walkable;
+		}
+		public Vector3 getGridWorldPos()
+		{
+			return gridWorldPosition;
+		}
         public Node getFromNode()
         {
             return fromNode;
@@ -70,6 +67,13 @@ namespace GamesAI
         {
             return estimatedTotalCost;
         }
+		public int getHeuristicValue(Node targetNode) {
+			int dstX = Mathf.Abs(getIndexX() - targetNode.getIndexX());
+			int dstY = Mathf.Abs(getIndexY() - targetNode.getIndexY());
+
+			if (dstX > dstY)
+				return 14*dstY + 10* (dstX-dstY);
+			return 14*dstX + 10 * (dstY-dstX);
+		}
     }
 }
-
