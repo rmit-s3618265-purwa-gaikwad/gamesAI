@@ -4,7 +4,7 @@ using UnityEngine.AI;
 namespace GamesAI
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class ThirdPersonCharacter : MonoBehaviour
+    public class Character : MonoBehaviour
     {
         public float slowingRadius = 1;
         public float maxSpeed = 100;
