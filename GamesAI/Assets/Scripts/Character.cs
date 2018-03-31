@@ -12,6 +12,13 @@ namespace GamesAI
 
         Rigidbody m_Rigidbody;
 
+        public struct ArriveResult
+        {
+            public Vector3 desiredVelocity;
+            public float distance;
+            public bool isSlowing;
+        }
+
         void Start()
         {
 			Debug.Log ("Starting the game");
@@ -34,19 +41,31 @@ namespace GamesAI
         }
 
 
-        public void Move(Vector3 move)
+        public void Move(Vector3 desiredVelocity)
         {
-            float distance = move.magnitude;
-            // Normalise only if length > 1
-            if (distance > 1) move /= distance;
-            Vector3 desiredVelocity = move * maxSpeed;
-            if (distance < slowingRadius)
-            {
-                desiredVelocity *= distance/slowingRadius;
-            }
             Vector3 steering = desiredVelocity - m_Rigidbody.velocity;
             steering = Truncate(steering, maxForce);
             m_Rigidbody.AddForce(steering, ForceMode.Impulse);
+        }
+
+        public ArriveResult Arrive(Vector3 destination)
+        {
+            ArriveResult res = new ArriveResult();
+            Vector3 move = destination - transform.position;
+            res.distance = move.magnitude;
+            // Normalise only if length > 1
+            if (res.distance > 1) move /= res.distance;
+            res.desiredVelocity = move * maxSpeed;
+            if (res.distance < slowingRadius)
+            {
+                res.desiredVelocity *= res.distance / slowingRadius;
+                res.isSlowing = true;
+            }
+            else
+            {
+                res.isSlowing = false;
+            }
+            return res;
         }
 
         private static Vector3 Truncate(Vector3 vec, float max)

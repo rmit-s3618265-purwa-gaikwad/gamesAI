@@ -18,16 +18,15 @@ namespace GamesAI
         }
 
         // Fixed update is called in sync with physics
-        private void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             if (targets.Count > 0)
             {
                 Vector3 target = targets.Peek();
-                Vector3 move = target - transform.position;
-                float distance = move.magnitude;
-                if (distance < m_Character.slowingRadius)
+                Character.ArriveResult arrive = m_Character.Arrive(target);
+                if (arrive.isSlowing)
                 {
-                    if ((targets.Count == 1) && (distance < 0.01))
+                    if ((targets.Count == 1) && (arrive.distance < 0.01))
                     {
                         targets.Dequeue();
                     }
@@ -36,7 +35,7 @@ namespace GamesAI
                         targets.Dequeue();
                     }
                 }
-                m_Character.Move(move);
+                m_Character.Move(arrive.desiredVelocity);
             }
         }
     }
