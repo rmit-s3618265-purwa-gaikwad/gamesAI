@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using GamesAI;
 using UnityEngine;
 
 namespace GamesAI
 {
     public class NPC : CharacterControl
     {
+        public float groupSearchRadius;
+        private float sqrGroupSearchRadius;
         public float separation;
         private float sqrSeparation;
 
@@ -16,37 +15,36 @@ namespace GamesAI
         {
             base.Start();
             sqrSeparation = separation*separation;
-
+            sqrGroupSearchRadius = groupSearchRadius*groupSearchRadius;
         }
 
-        protected Vector3 Separation(string tag, bool avoidPlayer)
+        protected Vector3 Separation(IEnumerable<GameObject> grouping)
         {
-            IEnumerable<GameObject> others = GameObject.FindGameObjectsWithTag(tag);
-            if (avoidPlayer)
-            {
-                others = others.Concat(GameObject.FindGameObjectsWithTag("Player"));
-            }
-            Vector3 force = Vector3.zero;
-            var neighbors = 0;
-            IEnumerable<Vector3> differences =
-                from other in others
-                where other != this
-                let diff = other.GetComponent<Transform>().position - transform.position
-                where diff.sqrMagnitude <= sqrSeparation
-                select diff;
-            foreach (Vector3 diff in differences)
-            {
-                force += diff;
-                neighbors++;
-            }
-            if (neighbors > 0)
-            {
-                force /= neighbors * -1;
-                force.Normalize();
-                force *= separation;
-            }
+            return (from other in grouping
+                where other != gameObject
+                let diff = (other.transform.position - transform.position).IgnoreY()
+                let sqrDistance = diff.sqrMagnitude
+                where sqrDistance <= sqrSeparation
+                select diff.normalized / sqrDistance).Sum(normalize: false)*separation*-1;
+        }
 
-            return force;
+        protected Vector3 Alignment(IEnumerable<GameObject> grouping)
+        {
+            return (from other in grouping
+                where other != gameObject
+                let dist = (other.transform.position - transform.position).IgnoreY()
+                where dist.sqrMagnitude <= sqrGroupSearchRadius
+                select other.GetComponent<Rigidbody>().velocity).Average(normalize: true);
+        }
+
+        protected Vector3 Cohesion(IEnumerable<GameObject> grouping)
+        {
+            Vector3 center = (from other in grouping
+                where other != gameObject
+                let dist = (other.transform.position - transform.position).IgnoreY()
+                where dist.sqrMagnitude <= sqrGroupSearchRadius
+                select other.transform.position.IgnoreY()).Average(normalize: false);
+            return center - transform.position.IgnoreY();
         }
     }
 }

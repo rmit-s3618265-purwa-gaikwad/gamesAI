@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Assets.Scripts;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GamesAI
@@ -9,7 +9,8 @@ namespace GamesAI
     {
         protected Character m_Character; // A reference to the Character on the object
         protected LastQueue<Vector3> targets = new LastQueue<Vector3>(); // List of targets to head towards
-        // Most recent click/current last target, used to prevent adding many targets too close together. Null when no targets exist
+
+        public Vector3? CurrentTarget => targets.Count > 0 ? new Vector3?(targets.Peek()) : null;
 
         protected virtual void Start()
         {
@@ -26,7 +27,7 @@ namespace GamesAI
                 Character.ArriveResult arrive = m_Character.Arrive(target);
                 if (arrive.isSlowing)
                 {
-                    if ((targets.Count == 1) && (arrive.distance < 0.01))
+                    if ((targets.Count == 1) && (arrive.distance < 0.25))
                     {
                         targets.Dequeue();
                     }
@@ -38,5 +39,6 @@ namespace GamesAI
                 m_Character.Move(arrive.desiredVelocity);
             }
         }
+
     }
 }

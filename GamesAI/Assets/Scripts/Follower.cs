@@ -1,17 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace GamesAI
 {
     public class Follower : NPC
     {
-        private Transform player;
-        private readonly State state = State.FollowingPlayer;
+        private State state = State.FollowingPlayer;
 
-        protected override void Start()
-        {
-            base.Start();
-            player = GameObject.FindWithTag("Player").GetComponent<Transform>();
-        }
+        public float playerFollowWeight = 1.0f;
+        public float separationWeight = 1.0f;
+        public float cohesionWeight = 1.0f;
 
         protected override void FixedUpdate()
         {
@@ -29,11 +27,22 @@ namespace GamesAI
 
         private void FollowPlayer()
         {
-            Character.ArriveResult arrive = m_Character.Arrive(player.position);
-            Vector3 move = arrive.desiredVelocity;
-            move += Separation("Follower", true);
+            CharacterControl player = GameManager.Instance.Player;
+            GameObject playerGameObject = player.gameObject;
+            Vector3? target = player.CurrentTarget;
+            Vector3 move;
+            if (target.HasValue)
+            {
+                Character.ArriveResult arrive = m_Character.Arrive(target.Value);
+                move = arrive.desiredVelocity*playerFollowWeight;
+            }
+            else
+            {
+                move = Cohesion(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject })) * cohesionWeight;
+            }
+            move += Separation(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject })) * separationWeight;
             // TODO: Avoid player predicted future position
-            m_Character.Move(move);
+            m_Character.Move(move / ((target.HasValue ? playerFollowWeight : cohesionWeight) + separationWeight));
         }
 
         private enum State

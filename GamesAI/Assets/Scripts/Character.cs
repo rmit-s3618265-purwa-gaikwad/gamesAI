@@ -10,7 +10,7 @@ namespace GamesAI
         public float maxSpeed = 100;
         public float maxForce = 0.2f;
 
-        Rigidbody m_Rigidbody;
+        public Rigidbody m_Rigidbody { get; private set; }
 
         public struct ArriveResult
         {
@@ -21,21 +21,6 @@ namespace GamesAI
 
         void Start()
         {
-			Debug.Log ("Starting the game");
-			/*List<NavMeshSurface> listSurfaces = NavMeshSurface.activeSurfaces;*/
-			NavMeshTriangulation navMeshTriangulation = NavMesh.CalculateTriangulation ();
-
-			int[] nodeAreaIndices = navMeshTriangulation.indices;
-			Vector3[] nodeVectors = navMeshTriangulation.vertices;
-			int[] nodeAreas = navMeshTriangulation.areas;
-
-			Debug.Log (string.Format("vertices size = {0}", nodeVectors.Length));
-			Debug.Log (string.Format("indices size = {0}", nodeAreaIndices.Length));
-			Debug.Log (string.Format("areas size = {0}", navMeshTriangulation.areas.Length));
-
-			foreach(Vector3 v in nodeVectors) {
-				Debug.Log (string.Format("Vertices in triangulation is {0}, {1}, {2}", v.x, v.y, v.z));
-			}
             m_Rigidbody = GetComponent<Rigidbody>();
             m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         }
@@ -50,8 +35,8 @@ namespace GamesAI
 
         public ArriveResult Arrive(Vector3 destination)
         {
-            ArriveResult res = new ArriveResult();
-            Vector3 move = destination - transform.position;
+            var res = new ArriveResult();
+            Vector3 move = (destination - transform.position).IgnoreY();
             res.distance = move.magnitude;
             // Normalise only if length > 1
             if (res.distance > 1) move /= res.distance;

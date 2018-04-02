@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Assets.Scripts
+namespace GamesAI
 {
     public class LastQueue<T> where T: struct 
     {
         private readonly Queue<T> queue = new Queue<T>();
 
-        public int Count { get { return queue.Count; } }
+        public int Count => queue.Count;
 
         public T? Last { get; private set; }
 
@@ -28,9 +28,6 @@ namespace Assets.Scripts
             return queue.Dequeue();
         }
 
-        public T Peek()
-        {
-            return queue.Peek();
-        }
+        public T Peek() => queue.Peek();
     }
 }
