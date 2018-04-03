@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -56,6 +57,30 @@ namespace GamesAI
                     }
                     return vec;
                 });
+        }
+
+        public static ClosestResult ClosestTo(this IEnumerable<Character> source, Vector3 pos, float sqrRange)
+        {
+            return source.Aggregate(new ClosestResult(character: null, sqrDistance: sqrRange),
+                (closest, character) =>
+                {
+                    float sqrDistance = (character.transform.position - pos).sqrMagnitude;
+                    return sqrDistance <= closest.SqrDistance
+                        ? new ClosestResult(character, sqrDistance)
+                        : closest;
+                });
+        }
+
+        public class ClosestResult
+        {
+            public readonly Character Character;
+            public readonly float SqrDistance;
+
+            internal ClosestResult(Character character, float sqrDistance)
+            {
+                Character = character;
+                SqrDistance = sqrDistance;
+            }
         }
 
         public static Vector3 IgnoreY(this Vector3 vec) => new Vector3(vec.x, 0, vec.z);

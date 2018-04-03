@@ -5,50 +5,51 @@ namespace GamesAI
 {
     public class Follower : NPC
     {
-        private State state = State.FollowingPlayer;
-
-        public float playerFollowWeight = 1.0f;
-        public float separationWeight = 1.0f;
-        public float cohesionWeight = 1.0f;
-
         protected override void FixedUpdate()
         {
-            switch (state)
+            Retaliate();
+            FollowPlayer();
+        }
+
+        private void Retaliate()
+        {
+            Helper.ClosestResult target = GameManager.Instance.Enemies.ClosestTo(transform.position, sqrAttackRadius);
+            if (target.Character != null)
             {
-                case State.PursuingEnemy:
-                    // TODO: Get nearest enemy and path
-                    base.FixedUpdate();
-                    break;
-                case State.FollowingPlayer:
-                    FollowPlayer();
-                    break;
+                Attack(target.Character);
             }
         }
 
         private void FollowPlayer()
         {
-            CharacterControl player = GameManager.Instance.Player;
+            Character player = GameManager.Instance.Player;
             GameObject playerGameObject = player.gameObject;
             Vector3? target = player.CurrentTarget;
             Vector3 move;
             if (target.HasValue)
             {
-                Character.ArriveResult arrive = m_Character.Arrive(target.Value);
-                move = arrive.desiredVelocity*playerFollowWeight;
+                CharacterMotor.ArriveResult arrive = Motor.Arrive(target.Value);
+                move = arrive.desiredVelocity;
             }
             else
             {
-                move = Cohesion(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject })) * cohesionWeight;
+                move = Cohesion(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject }));
             }
-            move += Separation(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject })) * separationWeight;
-            // TODO: Avoid player predicted future position
-            m_Character.Move(move / ((target.HasValue ? playerFollowWeight : cohesionWeight) + separationWeight));
+            move += Separation(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject }));
+            Motor.Move(move);
         }
 
-        private enum State
+        public override void Damage(float damage)
         {
-            FollowingPlayer,
-            PursuingEnemy
+            base.Damage(damage);
+            if (health <= 0)
+            {
+                GameManager.Instance.Followers.Destroy(this);
+            }
+            else
+            {
+                UpdateHealth();
+            }
         }
     }
 }

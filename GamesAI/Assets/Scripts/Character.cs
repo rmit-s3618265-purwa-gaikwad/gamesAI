@@ -1,63 +1,72 @@
-using UnityEngine;
-using UnityEngine.AI;
+﻿using UnityEngine;
 
 namespace GamesAI
 {
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(CharacterMotor))]
     public class Character : MonoBehaviour
     {
-        public float slowingRadius = 1;
-        public float maxSpeed = 100;
-        public float maxForce = 0.2f;
+        public float attackCooldown = 0.1f;
 
-        public Rigidbody m_Rigidbody { get; private set; }
+        public float attackRadius = 0.6f;
+        public float attackStrength = 1f;
+        protected float health = 10f;
 
-        public struct ArriveResult
+        public float maxHealth = 10f;
+
+        private float previousAttack;
+        protected float sqrAttackRadius;
+        protected LastQueue<Vector3> targets = new LastQueue<Vector3>(); // List of targets to head towards
+        public CharacterMotor Motor { get; private set; } // A reference to the Character on the object
+
+        public Vector3? CurrentTarget => targets.Count > 0 ? new Vector3?(targets.Peek()) : null;
+
+        protected virtual void Start()
         {
-            public Vector3 desiredVelocity;
-            public float distance;
-            public bool isSlowing;
+            sqrAttackRadius = attackRadius*attackRadius;
         }
 
-        void Start()
+        protected virtual void OnEnable()
         {
-            m_Rigidbody = GetComponent<Rigidbody>();
-            m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+            health = maxHealth;
+            
+            // Done in OnEnable() because this is called earlier than Start(), which seems to be called to late for use after Instantiate()
+            Motor = GetComponent<CharacterMotor>();
         }
 
-
-        public void Move(Vector3 desiredVelocity)
+        // Fixed update is called in sync with physics
+        protected virtual void FixedUpdate()
         {
-            Vector3 steering = desiredVelocity - m_Rigidbody.velocity;
-            steering = Truncate(steering, maxForce);
-            m_Rigidbody.AddForce(steering, ForceMode.Impulse);
-        }
-
-        public ArriveResult Arrive(Vector3 destination)
-        {
-            var res = new ArriveResult();
-            Vector3 move = (destination - transform.position).IgnoreY();
-            res.distance = move.magnitude;
-            // Normalise only if length > 1
-            if (res.distance > 1) move /= res.distance;
-            res.desiredVelocity = move * maxSpeed;
-            if (res.distance < slowingRadius)
+            if (targets.Count > 0)
             {
-                res.desiredVelocity *= res.distance / slowingRadius;
-                res.isSlowing = true;
+                Vector3 target = targets.Peek();
+                CharacterMotor.ArriveResult arrive = Motor.Arrive(target);
+                if (arrive.isSlowing)
+                {
+                    if ((targets.Count == 1) && (arrive.distance < 0.25))
+                    {
+                        targets.Dequeue();
+                    }
+                    else if (targets.Count > 1)
+                    {
+                        targets.Dequeue();
+                    }
+                }
+                Motor.Move(arrive.desiredVelocity);
             }
-            else
-            {
-                res.isSlowing = false;
-            }
-            return res;
         }
 
-        private static Vector3 Truncate(Vector3 vec, float max)
+        public virtual void Damage(float damage)
         {
-            float scale = max/vec.magnitude;
-            scale = scale < 1 ? scale : 1;
-            return vec * scale;
+            health -= damage;
+        }
+
+        protected void Attack(Character target)
+        {
+            float time = Time.time;
+            if (time - previousAttack < attackCooldown) return;
+
+            target.Damage(attackStrength);
+            previousAttack = time;
         }
     }
 }

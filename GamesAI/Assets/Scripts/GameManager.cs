@@ -5,20 +5,18 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    private List<Enemy> enemies;
-    private List<Follower> followers;
-    public CharacterControl Player { get; private set; }
-    public GameObject PlayerGameObject => Player.gameObject;
+    public Follower followerPrefab;
+    public Enemy enemyPrefab;
+
+    public ObjectPool<Follower> Followers { get; private set; }
+    public ObjectPool<Enemy> Enemies { get; private set; }
+    public Character Player { get; private set; }
 
     public static GameManager Instance { get; private set; }
 
-    public IEnumerable<Follower> Followers => followers;
+    public IEnumerable<GameObject> FollowerGameObjects => Followers.Select(follower => follower.gameObject);
 
-    public IEnumerable<GameObject> FollowerGameObjects => followers.Select(follower => follower.gameObject);
-
-    public IEnumerable<Enemy> Enemies => enemies;
-
-    public IEnumerable<GameObject> EnemyGameObjects => enemies.Select(enemy => enemy.gameObject);
+    public IEnumerable<GameObject> EnemyGameObjects => Enemies.Select(enemy => enemy.gameObject);
 
     private void Awake()
     {
@@ -34,11 +32,16 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        followers =
-            GameObject.FindGameObjectsWithTag("Follower").Select(follower => follower.GetComponent<Follower>()).ToList();
-        enemies =
-            GameObject.FindGameObjectsWithTag("Enemy").Select(enemy => enemy.GetComponent<Enemy>()).ToList();
-        Player = GameObject.FindWithTag("Player").GetComponent<CharacterControl>();
+        Followers =
+            new ObjectPool<Follower>(
+                GameObject.FindGameObjectsWithTag("Follower")
+                    .Select(follower => follower.GetComponent<Follower>())
+                    .ToList(), followerPrefab);
+        Enemies =
+            new ObjectPool<Enemy>(
+                GameObject.FindGameObjectsWithTag("Enemy").Select(enemy => enemy.GetComponent<Enemy>()).ToList(),
+                enemyPrefab);
+        Player = GameObject.FindWithTag("Player").GetComponent<Character>();
     }
 
     private void OnDestroy()

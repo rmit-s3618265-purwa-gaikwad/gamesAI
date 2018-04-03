@@ -6,17 +6,20 @@ using UnityStandardAssets.CrossPlatformInput;
 
 namespace GamesAI
 {
-    public class ThirdPersonUserControl : CharacterControl
+    [RequireComponent(typeof(MeshRenderer))]
+    public class ThirdPersonUser : Character
     {
         public GameObject ground;           // Used for click positioning
         public Camera cam;                  // Used for both click positioning
         public Transform camTarget;         // Target transform for camera
         private Collider groundCollider;    // Used for click positioning, cached here to avoid calling GetComponent<Collider>() every Update
+        private Material material;
 
         protected override void Start()
         {
             base.Start();
             groundCollider = ground.GetComponent<Collider>();
+            material = GetComponent<MeshRenderer>().material;
         }
 
         private void Update()
@@ -36,6 +39,16 @@ namespace GamesAI
                     }
                 }
             }
+        }
+
+        public override void Damage(float damage)
+        {
+            base.Damage(damage);
+            if (health <= 0)
+            {
+                // TODO: End game
+            }
+            material.color = Color.Lerp(Color.black, Color.yellow, health/maxHealth);
         }
     }
 }

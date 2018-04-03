@@ -4,18 +4,28 @@ using UnityEngine;
 
 namespace GamesAI
 {
-    public class NPC : CharacterControl
+    [RequireComponent(typeof(MeshRenderer))]
+    public class NPC : Character
     {
         public float groupSearchRadius;
         private float sqrGroupSearchRadius;
         public float separation;
         private float sqrSeparation;
+        public Gradient HealthGradient;
+        private Material material;
 
         protected override void Start()
         {
             base.Start();
             sqrSeparation = separation*separation;
             sqrGroupSearchRadius = groupSearchRadius*groupSearchRadius;
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            material = GetComponent<MeshRenderer>().material;
+            UpdateHealth();
         }
 
         protected Vector3 Separation(IEnumerable<GameObject> grouping)
@@ -45,6 +55,11 @@ namespace GamesAI
                 where dist.sqrMagnitude <= sqrGroupSearchRadius
                 select other.transform.position.IgnoreY()).Average(normalize: false);
             return center - transform.position.IgnoreY();
+        }
+
+        protected void UpdateHealth()
+        {
+            material.color = HealthGradient.Evaluate(Mathf.Clamp01(health/maxHealth));
         }
     }
 }
