@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641234, b: 0.57481676, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -643,6 +643,7 @@ GameObject:
   - component: {fileID: 284861530}
   - component: {fileID: 284861534}
   - component: {fileID: 284861532}
+  - component: {fileID: 284861536}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -751,6 +752,18 @@ CapsuleCollider:
   m_Height: 1.6
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &284861536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 284861529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0acf63d586ce843fd8f7f7d95e9cbd1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  grid: {fileID: 554930609}
 --- !u!4 &284861537
 Transform:
   m_ObjectHideFlags: 0
@@ -1225,6 +1238,7 @@ GameObject:
   - component: {fileID: 554930607}
   - component: {fileID: 554930606}
   - component: {fileID: 554930605}
+  - component: {fileID: 554930609}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -1300,6 +1314,22 @@ Transform:
   m_Father: {fileID: 2047080538}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &554930609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 554930604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70579c303da4f4a5692a257c40ae6544, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unwalkableMask:
+    serializedVersion: 2
+    m_Bits: 0
+  gridWorldSize: {x: 100, y: 100}
+  nodeLength: 0.5
 --- !u!1001 &612572729
 Prefab:
   m_ObjectHideFlags: 0

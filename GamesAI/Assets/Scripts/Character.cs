@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.GameObject;
 
 namespace GamesAI
 {
@@ -42,17 +41,17 @@ namespace GamesAI
             if (targets.Count > 0)
             {
                 Vector3 target = targets.Peek();
-				PathFinding pathfinding = new PathFinding();
-				//adding in player's current location as source
-				List<Node> listNodes = pathfinding.process(((GameObject.Find("Player")).transform.position).IgnoreY(), target.IgnoreY());
+				PathFinding pathfinding = GetComponent<PathFinding> ();
+				List<Node> listNodes = pathfinding.process((transform.position).IgnoreY(), target.IgnoreY());
 				Vector3 intermediateNode;
 				while(listNodes.Count > 0)
 				{
 					intermediateNode = listNodes[0].getGridWorldPos();
-					listNodes.RemoveAt(0);
 					CharacterMotor.ArriveResult arrive = Motor.Arrive(intermediateNode);
+					listNodes.RemoveAt(0);
 					Motor.Move(arrive.desiredVelocity);
 				}
+				targets.Dequeue();
             }
         }
 		/*

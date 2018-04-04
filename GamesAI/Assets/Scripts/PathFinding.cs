@@ -7,21 +7,11 @@ namespace GamesAI
 {
 	public class PathFinding: MonoBehaviour
     {
-		GridPlane grid;
-		public Transform start;
-		public Transform target;
+		public GridPlane grid;
 		public List<Node> path;
-		int val = 1;
-		void Awake() {
+		/*void Awake() {
 			grid = GetComponent<GridPlane> ();
-		}
-
-		void Update() {
-			if (val == 1) {
-				process (start.position, target.position);
-				val = 2;
-			}
-		}
+		}*/
 
 		public List<Node> process(Vector3 startVector, Vector3 targetVector)
         {
@@ -92,15 +82,13 @@ namespace GamesAI
             else
             {
                 path = new List<Node>();
-				grid.path = new List<Node>();
                 while (!currentNode.Equals(startNode))
                 {
 					Debug.Log (string.Format("Current node is {0}, {1}", currentNode.getIndexX(), currentNode.getIndexY()));
-					grid.path.Add (currentNode);
                     path.Add(currentNode);
                     currentNode = currentNode.getFromNode();
                 }
-				grid.path.Reverse ();
+				path.Remove (startNode);
                 path.Reverse();
                 return path;
             }
