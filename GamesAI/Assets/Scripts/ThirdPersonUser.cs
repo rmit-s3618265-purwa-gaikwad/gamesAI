@@ -33,9 +33,16 @@ namespace GamesAI
                 {
                     Vector3 target = hit.point;
                     Vector3? last = targets.Last;
+					List<Node> listNodes;
+					PathFinding pathfinding = GetComponent<PathFinding> ();
                     if (!last.HasValue || ((target - last.Value).magnitude > 1))
                     {
-                        targets.Enqueue(target);
+						listNodes = pathfinding.process((transform.position).IgnoreY(), target.IgnoreY());
+						while(listNodes.Count > 0)
+						{
+							targets.Enqueue (listNodes[0].getGridWorldPos());
+							listNodes.RemoveAt(0);
+						}
                     }
                 }
             }

@@ -36,7 +36,7 @@ namespace GamesAI
         }
 
         // Fixed update is called in sync with physics
-        protected virtual void FixedUpdate()
+        /*protected virtual void FixedUpdate()
         {
             if (targets.Count > 0)
             {
@@ -53,8 +53,8 @@ namespace GamesAI
 				}
 				targets.Dequeue();
             }
-        }
-		/*
+        }*/
+		
 		protected virtual void FixedUpdate()
         {
             if (targets.Count > 0)
@@ -75,7 +75,7 @@ namespace GamesAI
                 Motor.Move(arrive.desiredVelocity);
             }
         }
-		*/
+
 
         public virtual void Damage(float damage)
         {
