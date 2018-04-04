@@ -1086,6 +1086,10 @@ Prefab:
       propertyPath: m_Name
       value: Tree 1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1557315030970810, guid: e228e3e0170584b8d91ac8b89efc57fa, type: 2}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e228e3e0170584b8d91ac8b89efc57fa, type: 2}
   m_IsPrefabParent: 0
@@ -1327,7 +1331,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unwalkableMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   gridWorldSize: {x: 100, y: 100}
   nodeLength: 0.5
 --- !u!1001 &612572729
@@ -2583,6 +2587,10 @@ Prefab:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1557315030970810, guid: e228e3e0170584b8d91ac8b89efc57fa, type: 2}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e228e3e0170584b8d91ac8b89efc57fa, type: 2}
   m_IsPrefabParent: 0
@@ -3468,6 +3476,10 @@ Prefab:
     - target: {fileID: 1557315030970810, guid: e228e3e0170584b8d91ac8b89efc57fa, type: 2}
       propertyPath: m_Name
       value: Tree 1 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557315030970810, guid: e228e3e0170584b8d91ac8b89efc57fa, type: 2}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: e228e3e0170584b8d91ac8b89efc57fa, type: 2}
