@@ -9,7 +9,10 @@ namespace GamesAI{
 		public Vector2 gridWorldSize;
 		Node[,] grid;
 		public float nodeLength;
+	    public float collisionRadius;
 		int gridXSize, gridYSize;
+
+        public bool debug = false;
 
 		void Awake() {
 			gridXSize = Mathf.RoundToInt(gridWorldSize.x/(nodeLength));
@@ -18,7 +21,7 @@ namespace GamesAI{
 			GenerateGrid();
 		}
 
-		void GenerateGrid() {
+	    void GenerateGrid() {
 			grid = new Node[gridXSize,gridYSize];
 			Vector3 bottomLeft = transform.position - Vector3.right * gridWorldSize.x/2 - Vector3.forward * gridWorldSize.y/2;
 
@@ -27,7 +30,7 @@ namespace GamesAI{
 				for (int j = 0; j < gridYSize; j++) 
 				{
 					Vector3 worldLocation = bottomLeft + Vector3.right * (i * nodeLength + nodeLength/2) + Vector3.forward * (j * nodeLength + nodeLength/2);
-					bool walkable = !(Physics.CheckSphere(worldLocation,nodeLength/2,unwalkableMask));
+					bool walkable = !(Physics.CheckSphere(worldLocation,collisionRadius,unwalkableMask));
 					grid[i,j] = new Node(i, j, walkable, worldLocation);
 				}
 			}
@@ -36,6 +39,20 @@ namespace GamesAI{
 		public List<Node> GetNeighbours(Node node) {
 			List<Node> neighbours = new List<Node>();
 
+		    foreach (Vector2Int pos in new[] { new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(1, 0), new Vector2Int(0, 1) })
+		    {
+                int X = node.getIndexX() + pos.x;
+                int Y = node.getIndexY() + pos.y;
+                if (X >= 0 && X < gridXSize && Y >= 0 && Y < gridYSize)
+                {
+                    Node neighbour = grid[X, Y];
+                    if (neighbour.getWalkable())
+                    {
+                        neighbours.Add(grid[X, Y]);
+                    }
+                }
+            }
+            /*
 			for (int i = -1; i <= 1; i++) 
 			{
 				for (int j = -1; j <= 1; j++) 
@@ -50,6 +67,7 @@ namespace GamesAI{
 					}
 				}
 			}
+            */
 			return neighbours;
 		}
 			
@@ -67,21 +85,22 @@ namespace GamesAI{
 
 		public List<Node> path;
 		void OnDrawGizmos() {
-			Gizmos.DrawWireCube(transform.position,new Vector3(gridWorldSize.x,1,gridWorldSize.y));
+            if(!debug) return;
+
+            Gizmos.DrawWireCube(transform.position,new Vector3(gridWorldSize.x,1,gridWorldSize.y));
 
 			if (grid != null) {
-				Debug.Log ("Grid != null");
+				//Debug.Log ("Grid != null");
 				foreach (Node n in grid) {
-					Debug.Log (string.Format ("Checking node {0},{1}", n.getIndexX (), n.getIndexY ()));
+					//Debug.Log (string.Format ("Checking node {0},{1}", n.getIndexX (), n.getIndexY ()));
 					Gizmos.color = (n.getWalkable ()) ? Color.white : Color.red;
-					if (path != null)
-					if (path.Contains (n)) {
-						Debug.Log ("Drawing node");
-						Gizmos.color = Color.black;
-					}
-					Gizmos.DrawCube (n.getGridWorldPos (), Vector3.one * (nodeLength - .1f));
-				}
-			} 
-		}
+				    if (path != null && path.Contains (n)) {
+				        //Debug.Log ("Drawing node");
+				        Gizmos.color = Color.black;
+				    }
+				    Gizmos.DrawCube (n.getGridWorldPos (), Vector3.one * (nodeLength - .1f));
+                }
+            }
+        }
 	}
 }

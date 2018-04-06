@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GamesAI
 {
@@ -18,10 +19,7 @@ namespace GamesAI
 			Node startNode = grid.NodeFromWorldPoint(startVector);
 			Node targetNode = grid.NodeFromWorldPoint(targetVector);
 
-			if (startNode == null)
-				Debug.Log ("startNode is null");
-			if (targetNode == null)
-				Debug.Log ("targetNode is null");
+		    if (startNode == null || targetNode == null || !targetNode.getWalkable()) return null;
 			
 			PriorityQueue openlist = new PriorityQueue();
 			PriorityQueue closedlist = new PriorityQueue();          
@@ -90,6 +88,7 @@ namespace GamesAI
                 }
 				path.Remove (startNode);
                 path.Reverse();
+                grid.path = path.ToArray().ToList();
                 return path;
             }
         }

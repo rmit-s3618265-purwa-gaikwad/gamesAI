@@ -63,11 +63,11 @@ namespace GamesAI
                 CharacterMotor.ArriveResult arrive = Motor.Arrive(target);
                 if (arrive.isSlowing)
                 {
-                    if ((targets.Count == 1) && (arrive.distance < 0.25))
+                    if (targets.Count == 1 && arrive.distance < 0.25)
                     {
                         targets.Dequeue();
                     }
-                    else if (targets.Count > 1)
+                    else if (targets.Count > 1 && arrive.distance < 1)
                     {
                         targets.Dequeue();
                     }
