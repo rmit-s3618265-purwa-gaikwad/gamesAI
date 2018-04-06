@@ -47,6 +47,8 @@ namespace GamesAI
 		{
 			return indexY;
 		}
+
+        public Vector2Int Index => new Vector2Int(indexX, indexY);
 		public bool getWalkable()
 		{
 			return walkable;

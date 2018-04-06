@@ -84,5 +84,7 @@ namespace GamesAI
         }
 
         public static Vector3 IgnoreY(this Vector3 vec) => new Vector3(vec.x, 0, vec.z);
+
+        public static Vector2Int Sign(this Vector2Int vec) => new Vector2Int(Math.Sign(vec.x), Math.Sign(vec.y));
     }
 }

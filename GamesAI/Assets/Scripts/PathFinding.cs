@@ -73,24 +73,47 @@ namespace GamesAI
                 openlist.removeNode(currentNode);
                 closedlist.addNode(currentNode);
             }
-           	if (!currentNode.Equals(targetNode))
-            {
-                return null;
-            }
-            else
-            {
-                path = new List<Node>();
-                while (!currentNode.Equals(startNode))
-                {
-					Debug.Log (string.Format("Current node is {0}, {1}", currentNode.getIndexX(), currentNode.getIndexY()));
-                    path.Add(currentNode);
+           	if (currentNode == null || !currentNode.Equals(targetNode))
+           	    return null;
+
+		    path = new List<Node>();
+		    Node prevPrevNode = null;
+		    Node prevNode = null;
+		    while (!currentNode.Equals(startNode))
+		    {
+                //Debug.Log (string.Format("Current node is {0}, {1}", currentNode.getIndexX(), currentNode.getIndexY()));
+		        if (prevPrevNode == null)
+		        {
+		            if (prevNode == null)
+		            {
+                        path.Add(currentNode);
+                    }
+		            prevPrevNode = prevNode;
+		            prevNode = currentNode;
                     currentNode = currentNode.getFromNode();
-                }
-				path.Remove (startNode);
-                path.Reverse();
-                grid.path = path.ToArray().ToList();
-                return path;
-            }
+		        }
+		        else
+		        {
+		            Vector2Int prevToPrevPrev = (prevPrevNode.Index - prevNode.Index).Sign();
+		            Vector2Int currentToPrev = (prevNode.Index - currentNode.Index).Sign();
+		            if (prevToPrevPrev != currentToPrev)
+		            {
+		                path.Add(prevNode);
+		                prevPrevNode = prevNode;
+		                prevNode = currentNode;
+		                currentNode = currentNode.getFromNode();
+		            }
+		            else
+		            {
+                        prevNode = currentNode;
+                        currentNode = currentNode.getFromNode();
+                    }
+		        }
+		    }
+		    path.Remove (startNode);
+		    path.Reverse();
+		    grid.path = path.ToArray().ToList();
+		    return path;
         }
     }
 }

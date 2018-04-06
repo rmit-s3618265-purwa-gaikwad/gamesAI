@@ -39,6 +39,7 @@ namespace GamesAI{
 		public List<Node> GetNeighbours(Node node) {
 			List<Node> neighbours = new List<Node>();
 
+            /*
 		    foreach (Vector2Int pos in new[] { new Vector2Int(-1, 0), new Vector2Int(0, -1), new Vector2Int(1, 0), new Vector2Int(0, 1) })
 		    {
                 int X = node.getIndexX() + pos.x;
@@ -52,7 +53,7 @@ namespace GamesAI{
                     }
                 }
             }
-            /*
+            */
 			for (int i = -1; i <= 1; i++) 
 			{
 				for (int j = -1; j <= 1; j++) 
@@ -63,11 +64,14 @@ namespace GamesAI{
 					int Y = node.getIndexY() + j;
 					if (X >= 0 && X < gridXSize && Y >= 0 && Y < gridYSize) 
 					{
-						neighbours.Add(grid[X,Y]);
-					}
+                        Node neighbour = grid[X, Y];
+                        if (neighbour.getWalkable())
+                        {
+                            neighbours.Add(neighbour);
+                        }
+                    }
 				}
 			}
-            */
 			return neighbours;
 		}
 			
