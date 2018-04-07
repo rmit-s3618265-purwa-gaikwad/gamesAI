@@ -17,7 +17,7 @@ namespace GamesAI
 
         private float previousAttack;
         protected float sqrAttackRadius;
-        protected LastQueue<Vector3> targets = new LastQueue<Vector3>(); // List of targets to head towards
+        protected Queue<Vector3> targets = new Queue<Vector3>(); // List of targets to head towards
         public CharacterMotor Motor { get; private set; } // A reference to the Character on the object
 
         public Vector3? CurrentTarget => targets.Count > 0 ? new Vector3?(targets.Peek()) : null;
@@ -34,26 +34,6 @@ namespace GamesAI
             // Done in OnEnable() because this is called earlier than Start(), which seems to be called to late for use after Instantiate()
             Motor = GetComponent<CharacterMotor>();
         }
-
-        // Fixed update is called in sync with physics
-        /*protected virtual void FixedUpdate()
-        {
-            if (targets.Count > 0)
-            {
-                Vector3 target = targets.Peek();
-				PathFinding pathfinding = GetComponent<PathFinding> ();
-				List<Node> listNodes = pathfinding.process((transform.position).IgnoreY(), target.IgnoreY());
-				Vector3 intermediateNode;
-				while(listNodes.Count > 0)
-				{
-					intermediateNode = listNodes[0].getGridWorldPos();
-					CharacterMotor.ArriveResult arrive = Motor.Arrive(intermediateNode);
-					listNodes.RemoveAt(0);
-					Motor.Move(arrive.desiredVelocity);
-				}
-				targets.Dequeue();
-            }
-        }*/
 		
 		protected virtual void FixedUpdate()
         {

@@ -50,7 +50,6 @@ namespace GamesAI
         protected Vector3 Cohesion(IEnumerable<GameObject> grouping)
         {
             Vector3 center = (from other in grouping
-                where other != gameObject
                 let dist = (other.transform.position - transform.position).IgnoreY()
                 where dist.sqrMagnitude <= sqrGroupSearchRadius
                 select other.transform.position.IgnoreY()).Average(normalize: false);
