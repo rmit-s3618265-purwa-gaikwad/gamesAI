@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -67,6 +68,76 @@ namespace GamesAI{
 			int y = Mathf.RoundToInt((gridYSize-1) * percentY);
 			return grid[x,y];
 		}
+
+
+        /// <summary>
+        /// Untested and likely broken ray-grid traversal for testing if two points can be walked between
+        /// Planned to be used to smoothen the results from A* even further, and to replace the linecast being done by followers
+        /// </summary>
+        /// <param name="start3"></param>
+        /// <param name="end3"></param>
+        /// <returns></returns>
+        public bool CanWalkBetween(Vector3 start3, Vector3 end3)
+        {
+            Node node = NodeFromWorldPoint(start3);
+	        Node endNode = NodeFromWorldPoint(end3);
+            var start = new Vector2(start3.x, start3.z);
+            var end = new Vector2(end3.x, end3.z);
+	        Vector2 diff = end - start;
+            Vector2Int sign = diff.Sign();
+            var tMax = new Vector2();
+            var tDelta = new Vector2();
+	        if (sign.x != 0)
+	        {
+	            tDelta.x = sign.x*nodeLength/diff.x;
+	        }
+	        else
+	        {
+	            tDelta.x = float.PositiveInfinity;
+	        }
+	        if (sign.x > 0)
+	        {
+	            tMax.x = tDelta.x*(1 - start.x + Mathf.Floor(start.x));
+	        }
+	        else
+	        {
+	            tMax.x = tDelta.x*(start.x + Mathf.Floor(start.x));
+	        }
+
+            if (sign.y != 0)
+            {
+                tDelta.y = sign.y * nodeLength / diff.y;
+            }
+            else
+            {
+                tDelta.y = float.PositiveInfinity;
+            }
+            if (sign.y > 0)
+            {
+                tMax.y = tDelta.y * (1 - start.y + Mathf.Floor(start.y));
+            }
+            else
+            {
+                tMax.y = tDelta.y * (start.y + Mathf.Floor(start.y));
+            }
+
+	        do
+	        {
+	            if (!node.getWalkable()) return false;
+	            if (tMax.x < tMax.y)
+	            {
+	                tMax.x += tDelta.x;
+	                node = grid[node.indexX + sign.x, node.indexY];
+	            }
+	            else
+	            {
+                    tMax.y += tDelta.y;
+                    node = grid[node.indexX, node.indexY + sign.y];
+                }
+	        } while (!node.Equals(endNode));
+
+	        return true;
+        }
 
 		public List<Node> path;
 		void OnDrawGizmos() {

@@ -32,8 +32,7 @@ namespace GamesAI
                 if (groundCollider.Raycast(ray, out hit, 1000))
                 {
                     Vector3 target = hit.point;
-                    PathFinding pathfinding = GetComponent<PathFinding> ();
-                    List<Node> listNodes = pathfinding.process(transform.position, target);
+                    List<Node> listNodes = GameManager.Instance.PathFinding.process(transform.position, target);
                     if (listNodes != null)
                     {
                         targets = new Queue<Vector3>(listNodes.Select(node => node.getGridWorldPos()));

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(PathFinding))]
 public class GameManager : MonoBehaviour
 {
     public Follower followerPrefab;
@@ -41,6 +42,9 @@ public class GameManager : MonoBehaviour
     private Vector3 groundMin;
     private Vector3 groundMax;
 
+    [HideInInspector]
+    public PathFinding PathFinding;
+
     private void Awake()
     {
         if (Instance == null)
@@ -65,7 +69,9 @@ public class GameManager : MonoBehaviour
                 GameObject.FindGameObjectsWithTag("Enemy").Select(enemy => enemy.GetComponent<Enemy>()).ToList(),
                 enemyPrefab);
         Player = GameObject.FindWithTag("Player").GetComponent<Character>();
-        
+
+        PathFinding = GetComponent<PathFinding>();
+
         maxScore = 0;
 
         groundMin = Ground.position - Ground.localScale.IgnoreY()/2*10;

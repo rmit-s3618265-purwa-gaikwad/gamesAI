@@ -39,23 +39,27 @@ namespace GamesAI
         {
             if (targets.Count > 0)
             {
-                Vector3 target = targets.Peek();
-                CharacterMotor.ArriveResult arrive = Motor.Arrive(target);
-                if (arrive.isSlowing)
-                {
-                    if (targets.Count == 1 && arrive.distance < 0.25)
-                    {
-                        targets.Dequeue();
-                    }
-                    else if (targets.Count > 1 && arrive.distance < 1)
-                    {
-                        targets.Dequeue();
-                    }
-                }
-                Motor.Move(arrive.desiredVelocity);
+                FollowPath();
             }
         }
 
+        protected void FollowPath()
+        {
+            Vector3 target = targets.Peek();
+            CharacterMotor.ArriveResult arrive = Motor.Arrive(target);
+            if (arrive.isSlowing)
+            {
+                if (targets.Count == 1 && arrive.distance < 0.25)
+                {
+                    targets.Dequeue();
+                }
+                else if (targets.Count > 1 && arrive.distance < 1)
+                {
+                    targets.Dequeue();
+                }
+            }
+            Motor.Move(arrive.desiredVelocity);
+        }
 
         public virtual void Damage(float damage)
         {

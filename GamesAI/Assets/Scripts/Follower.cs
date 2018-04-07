@@ -1,10 +1,22 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace GamesAI
 {
     public class Follower : NPC
     {
+        public float allowedCohesionVariance = 1f;
+        private float sqrAllowedCohesionVariance;
+
+        private Vector3? playerPreviousTarget;
+
+        protected override void Start()
+        {
+            base.Start();
+            sqrAllowedCohesionVariance = allowedCohesionVariance;
+        }
+
         protected override void FixedUpdate()
         {
             Retaliate();
@@ -28,14 +40,66 @@ namespace GamesAI
             Vector3 move;
             if (target.HasValue)
             {
-                CharacterMotor.ArriveResult arrive = Motor.Arrive(target.Value);
-                move = arrive.desiredVelocity;
+                if (target == playerPreviousTarget && targets.Count > 0)
+                {
+                    FollowPath();
+                    return;
+                }
+                playerPreviousTarget = target;
+                if (Physics.Linecast(transform.position, target.Value, GameManager.Instance.GridPlane.unwalkableMask))
+                {
+                    List<Node> nodes = GameManager.Instance.PathFinding.process(transform.position, target.Value);
+                    if (nodes == null)
+                    {
+                        move = Motor.Arrive(target.Value).desiredVelocity;
+                    }
+                    else
+                    {
+                        targets = new Queue<Vector3>(nodes.Select(node => node.getGridWorldPos()));
+                        FollowPath();
+                        return;
+                    }
+                }
+                else
+                {
+                    targets.Clear();
+                    move = Motor.Arrive(target.Value).desiredVelocity;
+                }
             }
             else
             {
-                move = Cohesion(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject }));
+                Vector3 cohesionPos =
+                    CohesionPosition(GameManager.Instance.FollowerGameObjects.Concat(new[] {playerGameObject}));
+                if (((player.transform.position - cohesionPos).sqrMagnitude > sqrAllowedCohesionVariance) ||
+                    Physics.Linecast(transform.position, player.transform.position,
+                        GameManager.Instance.GridPlane.unwalkableMask))
+                {
+                    if (player.transform.position == playerPreviousTarget && targets.Count > 0)
+                    {
+                        FollowPath();
+                        return;
+                    }
+                    playerPreviousTarget = player.transform.position;
+                    List<Node> nodes = GameManager.Instance.PathFinding.process(transform.position,
+                        player.transform.position);
+                    if (nodes == null)
+                    {
+                        move = Motor.Arrive(player.transform.position).desiredVelocity;
+                    }
+                    else
+                    {
+                        targets = new Queue<Vector3>(nodes.Select(node => node.getGridWorldPos()));
+                        FollowPath();
+                        return;
+                    }
+                }
+                else
+                {
+                    move = Cohesion(cohesionPos);
+                    targets.Clear();
+                }
             }
-            move += Separation(GameManager.Instance.FollowerGameObjects.Concat(new[] { playerGameObject }));
+            move += Separation(GameManager.Instance.FollowerGameObjects.Concat(new[] {playerGameObject}));
             Motor.Move(move);
         }
 

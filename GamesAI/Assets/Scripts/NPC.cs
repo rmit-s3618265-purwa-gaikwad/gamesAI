@@ -48,12 +48,17 @@ namespace GamesAI
         }
 
         protected Vector3 Cohesion(IEnumerable<GameObject> grouping)
+            => Cohesion(CohesionPosition(grouping));
+
+        protected Vector3 Cohesion(Vector3 center) => center - transform.position.IgnoreY();
+
+        protected Vector3 CohesionPosition(IEnumerable<GameObject> grouping)
         {
             Vector3 center = (from other in grouping
-                let dist = (other.transform.position - transform.position).IgnoreY()
-                where dist.sqrMagnitude <= sqrGroupSearchRadius
-                select other.transform.position.IgnoreY()).Average(normalize: false);
-            return center - transform.position.IgnoreY();
+                              let dist = (other.transform.position - transform.position).IgnoreY()
+                              where dist.sqrMagnitude <= sqrGroupSearchRadius
+                              select other.transform.position.IgnoreY()).Average(normalize: false);
+            return center;
         }
 
         protected void UpdateHealth()

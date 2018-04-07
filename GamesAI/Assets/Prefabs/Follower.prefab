@@ -147,6 +147,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  allowedCohesionVariance: 10
 --- !u!114 &114442489323042520
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -9,7 +9,6 @@ namespace GamesAI
 	public class PathFinding: MonoBehaviour
     {
 		public GridPlane grid;
-		public List<Node> path;
 		/*void Awake() {
 			grid = GetComponent<GridPlane> ();
 		}*/
@@ -93,7 +92,7 @@ namespace GamesAI
 		        return null;
 		    }
 
-		    path = new List<Node>();
+		    var path = new List<Node>();
 		    Node prevPrevNode = null;
 		    Node prevNode = null;
 		    while (!currentNode.Equals(startNode))

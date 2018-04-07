@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -46,7 +48,7 @@ namespace GamesAI
             Vector3 move = (destination - transform.position).IgnoreY();
             res.distance = move.magnitude;
             // Normalise only if length > 1
-            if (res.distance > 1) move /= res.distance;
+            move /= res.distance;
             res.desiredVelocity = move * maxSpeed;
             if (res.distance < slowingRadius)
             {
