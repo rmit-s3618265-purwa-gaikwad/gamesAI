@@ -22,7 +22,8 @@ GameObject:
   - component: {fileID: 193431908929992240}
   - component: {fileID: 33646501680583176}
   - component: {fileID: 23869266595469242}
-  m_Layer: 0
+  - component: {fileID: 65319399368121312}
+  m_Layer: 8
   m_Name: Tree 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35,8 +36,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1557315030970810}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 15.758977, y: 0.23865509, z: 8.94}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -293,6 +294,18 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 0
+--- !u!65 &65319399368121312
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1557315030970810}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.0982949, y: 3.4578648, z: 1.2403221}
+  m_Center: {x: 0.00020176172, y: 1.7289324, z: 0.08046341}
 --- !u!114 &114853405642125344
 MonoBehaviour:
   m_ObjectHideFlags: 0

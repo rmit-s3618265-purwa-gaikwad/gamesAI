@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
 {
     public Follower followerPrefab;
     public Enemy enemyPrefab;
+    public GameObject[] obstaclePrefabs;
 
     public Text CurrentScoreText;
     public Text MaxScoreText;
@@ -18,6 +19,11 @@ public class GameManager : MonoBehaviour
 
     public float SpawnCooldown = 5f;
     public int MaxEnemySpawn = 5;
+    public int MinObstacles = 5;
+    public int MaxObstacles = 15;
+    public float MinObstacleDistance = 4f;
+    public int obstacleTries = 100;
+    public GridPlane GridPlane;
 
     public ObjectPool<Follower> Followers { get; private set; }
     public ObjectPool<Enemy> Enemies { get; private set; }
@@ -64,6 +70,29 @@ public class GameManager : MonoBehaviour
 
         groundMin = Ground.position - Ground.localScale.IgnoreY()/2*10;
         groundMax = Ground.position + Ground.localScale.IgnoreY()/2*10;
+
+        int numObstacles = Random.Range(MinObstacles, MaxObstacles + 1);
+        for (var i = 0; i < numObstacles; i++)
+        {
+            Vector3 pos = Vector3.zero;
+            var hasPos = false;
+            for (var j = 0; j < obstacleTries; j++)
+            {
+                pos = Helper.RandomRange(groundMin, groundMax);
+                if (!Physics.CheckSphere(pos, MinObstacleDistance, GridPlane.unwalkableMask))
+                {
+                    hasPos = true;
+                    break;
+                }
+            }
+            if(!hasPos) continue;
+            
+            GameObject obstacle = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Length)];
+            obstacle = Instantiate(obstacle);
+            obstacle.transform.position = pos;
+        }
+
+        GridPlane.GenerateGrid();
     }
 
     private void OnDestroy()
@@ -94,12 +123,11 @@ public class GameManager : MonoBehaviour
         if (time - lastSpawn < SpawnCooldown) return;
 
         lastSpawn = time;
-        int spawn = Random.Range(0, MaxEnemySpawn);
+        int spawn = Random.Range(0, MaxEnemySpawn + 1);
         for (var i = 0; i < spawn; i++)
         {
-            var point = new Vector3(Random.Range(groundMin.x, groundMax.x), groundMin.y + 0.8f, Random.Range(groundMin.z, groundMax.z));
             Enemy enemy = Enemies.Instantiate();
-            enemy.transform.position = point;
+            enemy.transform.position = Helper.RandomRange(groundMin, groundMax) + Vector3.up*0.8f;
         }
     }
 }

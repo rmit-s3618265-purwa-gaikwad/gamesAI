@@ -18,10 +18,10 @@ namespace GamesAI{
 			gridXSize = Mathf.RoundToInt(gridWorldSize.x/(nodeLength));
 			gridYSize = Mathf.RoundToInt(gridWorldSize.y/(nodeLength));
 			Debug.Log (string.Format("grid size x = {0}, y = {1}", gridXSize, gridYSize));
-			GenerateGrid();
+			//GenerateGrid();
 		}
 
-	    void GenerateGrid() {
+	    public void GenerateGrid() {
 			grid = new Node[gridXSize,gridYSize];
 			Vector3 bottomLeft = transform.position - Vector3.right * gridWorldSize.x/2 - Vector3.forward * gridWorldSize.y/2;
 
