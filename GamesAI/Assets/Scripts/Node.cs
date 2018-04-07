@@ -77,5 +77,12 @@ namespace GamesAI
 				return 14*dstY + 10* (dstX-dstY);
 			return 14*dstX + 10 * (dstY-dstX);
 		}
+
+        public void reset()
+        {
+            costSoFar = 0;
+            estimatedTotalCost = 0;
+            fromNode = null;
+        }
     }
 }
