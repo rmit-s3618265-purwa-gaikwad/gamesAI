@@ -12,6 +12,7 @@ namespace GamesAI
         public GameObject ground;           // Used for click positioning
         public Camera cam;                  // Used for both click positioning
         public Transform camTarget;         // Target transform for camera
+        public float zoomSensitivity;
         private Collider groundCollider;    // Used for click positioning, cached here to avoid calling GetComponent<Collider>() every Update
         private Material material;
 
@@ -24,7 +25,7 @@ namespace GamesAI
 
         private void Update()
         {
-            camTarget.position = transform.position;
+            UpdateCamera();
             if (Input.GetMouseButton(0))
             {
                 Ray ray = cam.ScreenPointToRay(Input.mousePosition);
@@ -39,6 +40,12 @@ namespace GamesAI
                     }
                 }
             }
+        }
+
+        private void UpdateCamera()
+        {
+            camTarget.position = transform.position;
+            cam.orthographicSize -= Input.GetAxis("Mouse ScrollWheel")*zoomSensitivity;
         }
 
         public override void Damage(float damage)

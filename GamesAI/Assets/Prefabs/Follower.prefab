@@ -112,10 +112,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 109e6e2ece9fbde48afb24ff045f660c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackCooldown: 0.1
+  attackCooldown: 0.15
   attackRadius: 0.6
-  attackStrength: 1.5
-  maxHealth: 10
+  attackStrength: 1.1
+  maxHealth: 15
   groupSearchRadius: Infinity
   separation: 2
   HealthGradient:

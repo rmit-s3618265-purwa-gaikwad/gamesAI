@@ -653,6 +653,7 @@ MonoBehaviour:
   ground: {fileID: 554930604}
   cam: {fileID: 1573365832}
   camTarget: {fileID: 754236219}
+  zoomSensitivity: 5
 --- !u!33 &284861534
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -3046,7 +3047,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1573365831}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -13.13}
+  m_LocalPosition: {x: 0, y: 0, z: -200.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 754236219}
