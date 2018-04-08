@@ -46,9 +46,13 @@ namespace GamesAI
             base.Damage(damage);
             if (health <= 0)
             {
-                // TODO: End game
+                GameManager.Instance.GameOver();
+                material.color = Color.black;
             }
-            material.color = Color.Lerp(Color.black, Color.yellow, health/maxHealth);
+            else
+            {
+                material.color = Color.Lerp(Color.black, Color.yellow, health / maxHealth);
+            }
         }
     }
 }

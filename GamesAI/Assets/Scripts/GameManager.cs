@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GamesAI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -16,6 +17,7 @@ public class GameManager : MonoBehaviour
 
     public Text CurrentScoreText;
     public Text MaxScoreText;
+    public GameObject GameOverPanel;
 
     public Transform Ground;
 
@@ -33,6 +35,8 @@ public class GameManager : MonoBehaviour
     public float ScreenshotCameraHeight = 104f;
     public int ScreenshotImageWidth = 3840;
     public int ScreenshotImageHeight = 2160;
+
+    public bool IsGameOver { get; private set; } = false;
 
     public ObjectPool<Follower> Followers { get; private set; }
     public ObjectPool<Enemy> Enemies { get; private set; }
@@ -170,5 +174,18 @@ public class GameManager : MonoBehaviour
         Destroy(render);
         byte[] image = screenshot.EncodeToPNG();
         System.IO.File.WriteAllBytes("screenshot.png", image);
+    }
+
+    public void GameOver()
+    {
+        IsGameOver = true;
+        Time.timeScale = 0;
+        GameOverPanel.SetActive(true);
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Time.timeScale = 1;
     }
 }

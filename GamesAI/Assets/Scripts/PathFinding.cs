@@ -17,11 +17,12 @@ namespace GamesAI
         {
 			Node startNode = grid.NodeFromWorldPoint(startVector);
 			Node targetNode = grid.NodeFromWorldPoint(targetVector);
-
+		    var hadStart = true;
 		    if (!startNode.getWalkable())
 		    {
 		        startNode = NearestWalkableNode(startNode);
-            }
+		        hadStart = false;
+		    }
 		    if (!targetNode.getWalkable())
 		    {
 		        targetNode = NearestWalkableNode(targetNode);
@@ -125,7 +126,10 @@ namespace GamesAI
                     }
 		        }
 		    }
-            path.Add(startNode);
+		    if (!hadStart)
+            {
+                path.Add(startNode);
+            }
             path.Reverse();
 		    grid.path = path.ToArray().ToList();
             ResetTouched(touchedList);
