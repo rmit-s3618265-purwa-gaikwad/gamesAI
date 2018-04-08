@@ -91,5 +91,19 @@ namespace GamesAI
 
         public static Vector3 RandomRange(Vector3 min, Vector3 max)
             => new Vector3(Random.Range(min.x, max.x), Random.Range(min.y, max.y), Random.Range(min.z, max.z));
+
+        public static void Fit(this Camera camera, float width, float height)
+        {
+            // Assuming the camera is rotated 30 degrees
+            float aspect = width / (height / 2);
+            if (camera.aspect <= aspect)
+            {
+                camera.orthographicSize = width / 2 / camera.aspect;
+            }
+            else
+            {
+                camera.orthographicSize = height / 4;
+            }
+        }
     }
 }

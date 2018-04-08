@@ -43,3 +43,9 @@ ehthumbs.db
 [Dd]esktop.ini
 Corridor/Library/ShaderCache/
 Corridor/Library/metadata/
+
+# ================ #
+# Manually Ignored #
+# ================ #
+GamesAI/screenshot.png
+GamesAI/gamesAI-screenshot.png

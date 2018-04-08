@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GamesAI;
@@ -20,11 +21,18 @@ public class GameManager : MonoBehaviour
 
     public float SpawnCooldown = 5f;
     public int MaxEnemySpawn = 5;
+    public int MaxTotalEnemies = 50;
     public int MinObstacles = 5;
     public int MaxObstacles = 15;
     public float MinObstacleDistance = 4f;
     public int obstacleTries = 100;
     public GridPlane GridPlane;
+
+    public Camera ScreenshotCamera;
+    public float ScreenshotCameraWidth = 102f;
+    public float ScreenshotCameraHeight = 104f;
+    public int ScreenshotImageWidth = 3840;
+    public int ScreenshotImageHeight = 2160;
 
     public ObjectPool<Follower> Followers { get; private set; }
     public ObjectPool<Enemy> Enemies { get; private set; }
@@ -113,6 +121,10 @@ public class GameManager : MonoBehaviour
     {
         UpdateScores();
         SpawnEnemies();
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            StartCoroutine(TakeScreenshot());
+        }
     }
 
     private void UpdateScores()
@@ -129,11 +141,34 @@ public class GameManager : MonoBehaviour
         if (time - lastSpawn < SpawnCooldown) return;
 
         lastSpawn = time;
-        int spawn = Random.Range(0, MaxEnemySpawn + 1);
+        int roomLeft = MaxTotalEnemies - Enemies.Count();
+        int spawn = Random.Range(0, Math.Min(MaxEnemySpawn, roomLeft) + 1);
         for (var i = 0; i < spawn; i++)
         {
             Enemy enemy = Enemies.Instantiate();
             enemy.transform.position = Helper.RandomRange(groundMin, groundMax) + Vector3.up*0.8f;
         }
+    }
+
+    private IEnumerator TakeScreenshot()
+    {
+        yield return new WaitForEndOfFrame();
+
+        var render = new RenderTexture(ScreenshotImageWidth, ScreenshotImageHeight, 24);
+        ScreenshotCamera.targetTexture = render;
+        var screenshot = new Texture2D(ScreenshotImageWidth, ScreenshotImageHeight, TextureFormat.RGB24, mipmap: false);
+        float previousAspect = ScreenshotCamera.aspect;
+        ScreenshotCamera.aspect = ((float)ScreenshotImageWidth) / ScreenshotImageHeight;
+        ScreenshotCamera.Fit(ScreenshotCameraWidth, ScreenshotCameraHeight);
+        ScreenshotCamera.Render();
+        RenderTexture.active = render;
+        screenshot.ReadPixels(new Rect(0, 0, ScreenshotImageWidth, ScreenshotImageHeight), destX: 0, destY: 0);
+        ScreenshotCamera.targetTexture = null;
+        RenderTexture.active = null;
+        ScreenshotCamera.aspect = previousAspect;
+
+        Destroy(render);
+        byte[] image = screenshot.EncodeToPNG();
+        System.IO.File.WriteAllBytes("screenshot.png", image);
     }
 }
